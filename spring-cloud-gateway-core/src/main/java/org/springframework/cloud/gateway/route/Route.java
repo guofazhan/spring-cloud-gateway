@@ -33,18 +33,38 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
+ * 路由实例信息
  * @author Spencer Gibb
  */
 public class Route implements Ordered {
 
+	/**
+	 * 路由编号
+	 * ID 编号，唯一
+	 */
 	private final String id;
 
+	/**
+	 * 路由向的 URI
+	 *
+	 */
 	private final URI uri;
 
+	/**
+	 * 顺序
+	 * 当请求匹配到多个路由时，使用顺序小的
+	 */
 	private final int order;
 
+	/**
+	 * 谓语数组
+	 * 请求通过 predicates 判断是否匹配
+	 */
 	private final Predicate<ServerWebExchange> predicate;
 
+	/**
+	 * 过滤器数组
+	 */
 	private final List<GatewayFilter> gatewayFilters;
 
 	public static Builder builder() {
