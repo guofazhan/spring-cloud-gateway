@@ -244,12 +244,21 @@ public class GatewayAutoConfiguration {
 		return new InMemoryRouteDefinitionRepository();
 	}
 
+
 	@Bean
-	@Primary
+	@Primary//意思是在众多相同的bean中，优先使用用@Primary注解的bean.
 	public RouteDefinitionLocator routeDefinitionLocator(List<RouteDefinitionLocator> routeDefinitionLocators) {
 		return new CompositeRouteDefinitionLocator(Flux.fromIterable(routeDefinitionLocators));
 	}
 
+	/**
+	 * 创建一个根据RouteDefinition转换的路由定位器
+	 * @param properties
+	 * @param GatewayFilters
+	 * @param predicates
+	 * @param routeDefinitionLocator
+	 * @return
+	 */
 	@Bean
 	public RouteLocator routeDefinitionRouteLocator(GatewayProperties properties,
 												   List<GatewayFilterFactory> GatewayFilters,
@@ -258,10 +267,18 @@ public class GatewayAutoConfiguration {
 		return new RouteDefinitionRouteLocator(routeDefinitionLocator, predicates, GatewayFilters, properties);
 	}
 
+	/**
+	 * 创建一个缓存路由的路由定位器
+	 * @param routeLocators
+	 * @return
+	 */
 	@Bean
-	@Primary
+	@Primary//意思是在众多相同的bean中，优先使用用@Primary注解的bean.
 	//TODO: property to disable composite?
 	public RouteLocator cachedCompositeRouteLocator(List<RouteLocator> routeLocators) {
+
+		//1.创建组合路由定位器，根据(容器)已有的路由定位器集合
+		//2.创建缓存功能的路由定位器
 		return new CachingRouteLocator(new CompositeRouteLocator(Flux.fromIterable(routeLocators)));
 	}
 
