@@ -23,10 +23,14 @@ import org.springframework.cloud.gateway.route.RouteDefinitionLocator;
 import reactor.core.publisher.Flux;
 
 /**
+ * 从Properties（GatewayProperties）中加载RouteDefinition信息
  * @author Spencer Gibb
  */
 public class PropertiesRouteDefinitionLocator implements RouteDefinitionLocator {
 
+	/**
+	 * 从appliccation.yml中解析前缀为spring.cloud.gateway的配置
+	 */
 	private final GatewayProperties properties;
 
 	public PropertiesRouteDefinitionLocator(GatewayProperties properties) {

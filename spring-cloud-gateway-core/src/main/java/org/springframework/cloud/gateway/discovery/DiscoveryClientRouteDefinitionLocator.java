@@ -41,8 +41,17 @@ import org.springframework.util.StringUtils;
  */
 public class DiscoveryClientRouteDefinitionLocator implements RouteDefinitionLocator {
 
+	/**
+	 * 注册中心客户端
+	 */
 	private final DiscoveryClient discoveryClient;
+	/**
+	 * 本地配置信息
+	 */
 	private final DiscoveryLocatorProperties properties;
+	/**
+	 * 路由ID前缀
+	 */
 	private final String routeIdPrefix;
 
 	public DiscoveryClientRouteDefinitionLocator(DiscoveryClient discoveryClient, DiscoveryLocatorProperties properties) {
@@ -55,6 +64,10 @@ public class DiscoveryClientRouteDefinitionLocator implements RouteDefinitionLoc
 		}
 	}
 
+	/**
+	 * 通过注册中心查找服务组装路由定义信息
+	 * @return
+	 */
 	@Override
 	public Flux<RouteDefinition> getRouteDefinitions() {
 		SimpleEvaluationContext evalCtxt = SimpleEvaluationContext
