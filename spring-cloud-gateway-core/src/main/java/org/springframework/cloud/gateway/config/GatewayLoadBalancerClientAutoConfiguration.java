@@ -37,6 +37,11 @@ public class GatewayLoadBalancerClientAutoConfiguration {
 
 	// GlobalFilter beans
 
+	/**
+	 * 全局过滤器，用于在通过负载均衡客户端选择服务实例信息
+	 * @param client
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnBean(LoadBalancerClient.class)
 	public LoadBalancerClientFilter loadBalancerClientFilter(LoadBalancerClient client) {

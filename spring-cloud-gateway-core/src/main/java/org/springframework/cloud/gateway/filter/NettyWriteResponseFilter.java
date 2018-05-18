@@ -36,6 +36,7 @@ import org.springframework.web.server.ServerWebExchange;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.CLIENT_RESPONSE_ATTR;
 
 /**
+ * netty HttpClient客户端响应报文写入原始响应的过滤器
  * @author Spencer Gibb
  */
 public class NettyWriteResponseFilter implements GlobalFilter, Ordered {
@@ -60,22 +61,29 @@ public class NettyWriteResponseFilter implements GlobalFilter, Ordered {
 		// NOTICE: nothing in "pre" filter stage as CLIENT_RESPONSE_ATTR is not added
 		// until the WebHandler is run
 		return chain.filter(exchange).then(Mono.defer(() -> {
+			//获取上下文中的HttpClient 响应信息
 			HttpClientResponse clientResponse = exchange.getAttribute(CLIENT_RESPONSE_ATTR);
 
 			if (clientResponse == null) {
 				return Mono.empty();
 			}
 			log.trace("NettyWriteResponseFilter start");
+			//获取请求的原始响应
 			ServerHttpResponse response = exchange.getResponse();
 
+			//获取数据工厂
 			NettyDataBufferFactory factory = (NettyDataBufferFactory) response.bufferFactory();
 			//TODO: what if it's not netty
 
+			//获取HttpClient 响应信息报文数据
 			final Flux<NettyDataBuffer> body = clientResponse.receive()
 					.retain() //TODO: needed?
 					.map(factory::wrap);
 
+			//获取媒体类型
 			MediaType contentType = response.getHeaders().getContentType();
+
+			//将响应报文写入到原始响应中
 			return (isStreamingMediaType(contentType) ?
 					response.writeAndFlushWith(body.map(Flux::just)) : response.writeWith(body));
 		}));

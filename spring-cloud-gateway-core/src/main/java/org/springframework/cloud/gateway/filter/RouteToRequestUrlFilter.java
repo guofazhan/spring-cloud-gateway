@@ -35,6 +35,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.c
 import reactor.core.publisher.Mono;
 
 /**
+ * 路由的路径转换过滤器
  * @author Spencer Gibb
  */
 public class RouteToRequestUrlFilter implements GlobalFilter, Ordered {
@@ -52,26 +53,32 @@ public class RouteToRequestUrlFilter implements GlobalFilter, Ordered {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+		//获取上下文路由信息
 		Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
 		if (route == null) {
 			return chain.filter(exchange);
 		}
 		log.trace("RouteToRequestUrlFilter start");
+		//获取请求URI信息
 		URI uri = exchange.getRequest().getURI();
 		boolean encoded = containsEncodedParts(uri);
+		//获取路由RUI信息
 		URI routeUri = route.getUri();
 
 		if (hasAnotherScheme(routeUri)) {
 			// this is a special url, save scheme to special attribute
 			// replace routeUri with schemeSpecificPart
+			//将路由的URI资源定位标识写入到上下文信息中
 			exchange.getAttributes().put(GATEWAY_SCHEME_PREFIX_ATTR, routeUri.getScheme());
 			routeUri = URI.create(routeUri.getSchemeSpecificPart());
 		}
 
+		//重新构建路由的URI信息
 		URI requestUrl = UriComponentsBuilder.fromUri(uri)
 				.uri(routeUri)
 				.build(encoded)
 				.toUri();
+		//设置路由URI信息到上下文环境中
 		exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, requestUrl);
 		return chain.filter(exchange);
 	}

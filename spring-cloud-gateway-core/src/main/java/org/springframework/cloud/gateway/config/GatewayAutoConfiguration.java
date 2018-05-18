@@ -210,12 +210,23 @@ public class GatewayAutoConfiguration {
 			return new HttpClientProperties();
 		}
 
+		/**
+		 * 全局过滤器，用户通过HttpClient转发请求
+		 * @param httpClient
+		 * @param headersFilters
+		 * @return
+		 */
 		@Bean
 		public NettyRoutingFilter routingFilter(HttpClient httpClient,
 												ObjectProvider<List<HttpHeadersFilter>> headersFilters) {
 			return new NettyRoutingFilter(httpClient, headersFilters);
 		}
 
+		/**
+		 * 全局的过滤器，用户将HttpClient客户端转发请求的响应写入到原始的请求响应中
+		 * @param properties
+		 * @return
+		 */
 		@Bean
 		public NettyWriteResponseFilter nettyWriteResponseFilter(GatewayProperties properties) {
 			return new NettyWriteResponseFilter(properties.getStreamingMediaTypes());
@@ -332,22 +343,39 @@ public class GatewayAutoConfiguration {
 
 	// GlobalFilter beans
 
+	/**
+	 * 全局的过滤器，用于判断是否缓存了请求体
+	 * @return
+	 */
 	@Bean
 	public AdaptCachedBodyGlobalFilter adaptCachedBodyGlobalFilter() {
 		return new AdaptCachedBodyGlobalFilter();
 	}
 
+	/**
+	 * 全局的过滤器，用于转换路由的URI信息
+	 * @return
+	 */
 	@Bean
 	public RouteToRequestUrlFilter routeToRequestUrlFilter() {
 		return new RouteToRequestUrlFilter();
 	}
 
+	/**
+	 * 全局过滤器，用于URI转发
+	 * @param dispatcherHandler
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnBean(DispatcherHandler.class)
 	public ForwardRoutingFilter forwardRoutingFilter(DispatcherHandler dispatcherHandler) {
 		return new ForwardRoutingFilter(dispatcherHandler);
 	}
 
+	/**
+	 * 全局过滤器，用户路径转发
+	 * @return
+	 */
 	@Bean
 	public ForwardPathFilter forwardPathFilter() {
 		return new ForwardPathFilter();

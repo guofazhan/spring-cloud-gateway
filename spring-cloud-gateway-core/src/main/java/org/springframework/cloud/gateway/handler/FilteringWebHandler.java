@@ -39,6 +39,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 import reactor.core.publisher.Mono;
 
 /**
+ * 通过过滤器处理web请求的处理器
  * WebHandler that delegates to a chain of {@link GlobalFilter} instances and
  * {@link GatewayFilterFactory} instances then to the target {@link WebHandler}.
  *
@@ -49,6 +50,9 @@ import reactor.core.publisher.Mono;
 public class FilteringWebHandler implements WebHandler {
 	protected static final Log logger = LogFactory.getLog(FilteringWebHandler.class);
 
+	/**
+	 * 全局过滤器
+	 */
 	private final List<GatewayFilter> globalFilters;
 
 	public FilteringWebHandler(List<GlobalFilter> globalFilters) {
@@ -58,9 +62,12 @@ public class FilteringWebHandler implements WebHandler {
 	private static List<GatewayFilter> loadFilters(List<GlobalFilter> filters) {
 		return filters.stream()
 				.map(filter -> {
+					//将所有的全局过滤器包装成网关过滤器
 					GatewayFilterAdapter gatewayFilter = new GatewayFilterAdapter(filter);
+					//判断全局过滤器是否实现了可排序接口
 					if (filter instanceof Ordered) {
 						int order = ((Ordered) filter).getOrder();
+						//包装成可排序的网关过滤器
 						return new OrderedGatewayFilter(gatewayFilter, order);
 					}
 					return gatewayFilter;
@@ -74,19 +81,27 @@ public class FilteringWebHandler implements WebHandler {
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange) {
+		//获取请求上下文设置的路由实例
 		Route route = exchange.getRequiredAttribute(GATEWAY_ROUTE_ATTR);
+		//获取路由定义下的网关过滤器集合
 		List<GatewayFilter> gatewayFilters = route.getFilters();
 
+		//组合全局的过滤器与路由配置的过滤器
 		List<GatewayFilter> combined = new ArrayList<>(this.globalFilters);
+		//添加路由配置过滤器到集合尾部
 		combined.addAll(gatewayFilters);
+		//对过滤器进行排序
 		//TODO: needed or cached?
 		AnnotationAwareOrderComparator.sort(combined);
 
 		logger.debug("Sorted gatewayFilterFactories: "+ combined);
-
+		//创建过滤器链表对其进行链式调用
 		return new DefaultGatewayFilterChain(combined).filter(exchange);
 	}
 
+	/**
+	 * 网关过滤的链表，用于过滤器的链式调用
+	 */
 	private static class DefaultGatewayFilterChain implements GatewayFilterChain {
 
 		private final int index;
@@ -120,6 +135,9 @@ public class FilteringWebHandler implements WebHandler {
 		}
 	}
 
+	/**
+	 * 全局过滤器的包装类，将全局路由包装成统一的网关过滤器
+	 */
 	private static class GatewayFilterAdapter implements GatewayFilter {
 
 		private final GlobalFilter delegate;

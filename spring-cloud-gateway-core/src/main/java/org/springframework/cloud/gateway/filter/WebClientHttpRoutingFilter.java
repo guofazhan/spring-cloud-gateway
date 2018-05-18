@@ -38,6 +38,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.s
 import reactor.core.publisher.Mono;
 
 /**
+ * WebClient 组件发送客户端请求过滤器
  * @author Spencer Gibb
  */
 public class WebClientHttpRoutingFilter implements GlobalFilter, Ordered {
