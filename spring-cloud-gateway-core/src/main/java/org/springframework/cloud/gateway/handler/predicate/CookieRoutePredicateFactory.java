@@ -28,6 +28,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
+ * cookie校验谓语创建工厂
  * @author Spencer Gibb
  */
 public class CookieRoutePredicateFactory extends AbstractRoutePredicateFactory<CookieRoutePredicateFactory.Config> {
@@ -47,7 +48,9 @@ public class CookieRoutePredicateFactory extends AbstractRoutePredicateFactory<C
 	@Override
 	public Predicate<ServerWebExchange> apply(Config config) {
 		return exchange -> {
+			//获取请求中给定名称的cookie信息
 			List<HttpCookie> cookies = exchange.getRequest().getCookies().get(config.name);
+			//校验cookie的值是否匹配正则表达式
 			if (cookies == null) {
 				return false;
 			}
@@ -60,11 +63,20 @@ public class CookieRoutePredicateFactory extends AbstractRoutePredicateFactory<C
 		};
 	}
 
+	/**
+	 * cookie校验谓语创建配置
+	 */
 	@Validated
 	public static class Config {
 
+		/**
+		 * cookie名称
+		 */
 		@NotEmpty
 		private String name;
+		/**
+		 * 配置正则
+		 */
 		@NotEmpty
 		private String regexp;
 

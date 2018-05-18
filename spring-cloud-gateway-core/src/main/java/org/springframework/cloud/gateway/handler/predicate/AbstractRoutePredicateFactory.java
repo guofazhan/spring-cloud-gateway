@@ -19,6 +19,10 @@ package org.springframework.cloud.gateway.handler.predicate;
 
 import org.springframework.cloud.gateway.support.AbstractConfigurable;
 
+/**
+ * 抽象的 路由的谓语创建工厂接口实现类
+ * @param <C>
+ */
 public abstract class AbstractRoutePredicateFactory<C> extends AbstractConfigurable<C>
 		implements RoutePredicateFactory<C> {
 

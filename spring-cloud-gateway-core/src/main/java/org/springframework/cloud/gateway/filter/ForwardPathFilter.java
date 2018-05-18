@@ -27,6 +27,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.isAlreadyRouted;
 
 /**
+ * 路径转发过滤器
  * Filter to set the path in the request URI if the {@link Route} URI has the scheme
  * <code>forward</code>.
  * @author Ryan Baxter
@@ -34,12 +35,17 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.i
 public class ForwardPathFilter implements GlobalFilter, Ordered{
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+		//获取当前请求上下文的路由信息
 		Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
+		//获取路由对应的URI
 		URI routeUri = route.getUri();
+		//获取URI中的统一资源标识符（Uniform Resource Identifier ）
 		String scheme = routeUri.getScheme();
+		//当scheme!=forward 或者已经路由时返回
 		if (isAlreadyRouted(exchange) || !"forward".equals(scheme)) {
 			return chain.filter(exchange);
 		}
+		//重新构建exchange（请求重新转发到routeUri.getPath())
 		exchange = exchange.mutate().request(
 				exchange.getRequest().mutate().path(routeUri.getPath()).build())
 				.build();

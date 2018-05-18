@@ -28,6 +28,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
+ * 请求host校验谓语创建工厂
  * @author Spencer Gibb
  */
 public class HostRoutePredicateFactory extends AbstractRoutePredicateFactory<HostRoutePredicateFactory.Config> {
@@ -50,13 +51,18 @@ public class HostRoutePredicateFactory extends AbstractRoutePredicateFactory<Hos
 	@Override
 	public Predicate<ServerWebExchange> apply(Config config) {
 		return exchange -> {
+			//获取请求host信息
 			String host = exchange.getRequest().getHeaders().getFirst("Host");
+			//判断host是否与配置信息匹配
 			return this.pathMatcher.match(config.getPattern(), host);
 		};
 	}
 
 	@Validated
 	public static class Config {
+		/**
+		 * host匹配配置
+		 */
 		private String pattern;
 
 		public String getPattern() {

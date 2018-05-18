@@ -35,6 +35,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.WEIGHT_ATTR;
 
 /**
+ * 请求权重校验谓语创建工厂
  * @author Spencer Gibb
  */
 //TODO: make this a generic Choose out of group predicate?
@@ -76,21 +77,26 @@ public class WeightRoutePredicateFactory extends AbstractRoutePredicateFactory<W
 	@Override
 	public Predicate<ServerWebExchange> apply(WeightConfig config) {
 		return exchange -> {
+			//获取当前请求权重信息
 			Map<String, String> weights = exchange.getAttributeOrDefault(WEIGHT_ATTR,
 					Collections.emptyMap());
 
+			//获取当前请求路由ID信息
 			String routeId = exchange.getAttribute(GATEWAY_PREDICATE_ROUTE_ATTR);
 
 			// all calculations and comparison against random num happened in
 			// WeightCalculatorWebFilter
+			//获取配置组信息
 			String group = config.getGroup();
+			//校验权重信息中是否包含配置的组信息
 			if (weights.containsKey(group)) {
 
+				//根据组信息在权重集合获取路由ID
 				String chosenRoute = weights.get(group);
 				if (log.isTraceEnabled()) {
 					log.trace("in group weight: "+ group + ", current route: " + routeId +", chosen route: " + chosenRoute);
 				}
-
+				//校验路由ID是否匹配
 				return routeId.equals(chosenRoute);
 			}
 

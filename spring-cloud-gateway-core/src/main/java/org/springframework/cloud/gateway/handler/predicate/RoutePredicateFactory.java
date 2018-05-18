@@ -26,12 +26,22 @@ import org.springframework.cloud.gateway.support.ShortcutConfigurable;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
+ * 路由的谓语创建工厂
+ * 负责根据配置生成 Predicate<ServerWebExchange>
  * @author Spencer Gibb
  */
 @FunctionalInterface
 public interface RoutePredicateFactory<C> extends ShortcutConfigurable, Configurable<C> {
+	/**
+	 *
+	 */
 	String PATTERN_KEY = "pattern";
 
+	/**
+	 * 默认创建方法
+	 * @param consumer
+	 * @return
+	 */
 	// useful for javadsl
 	default Predicate<ServerWebExchange> apply(Consumer<C> consumer) {
 		C config = newConfig();
@@ -53,7 +63,12 @@ public interface RoutePredicateFactory<C> extends ShortcutConfigurable, Configur
 
 	Predicate<ServerWebExchange> apply(C config);
 
+	/**
+	 * 默认的获取工厂的name属性
+	 * @return
+	 */
 	default String name() {
+		//根据类名切割前缀信息
 		return NameUtils.normalizeRoutePredicateName(getClass());
 	}
 

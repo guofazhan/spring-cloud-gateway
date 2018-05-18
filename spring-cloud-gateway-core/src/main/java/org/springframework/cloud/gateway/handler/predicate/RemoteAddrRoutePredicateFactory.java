@@ -39,6 +39,7 @@ import io.netty.handler.ipfilter.IpFilterRuleType;
 import io.netty.handler.ipfilter.IpSubnetFilterRule;
 
 /**
+ * 远程地址校验谓语创建工厂
  * @author Spencer Gibb
  */
 public class RemoteAddrRoutePredicateFactory extends AbstractRoutePredicateFactory<RemoteAddrRoutePredicateFactory.Config> {
@@ -70,18 +71,23 @@ public class RemoteAddrRoutePredicateFactory extends AbstractRoutePredicateFacto
 
 	@Override
 	public Predicate<ServerWebExchange> apply(Config config) {
+		//获取配置的远程地址列表
         List<IpSubnetFilterRule> sources = convert(config.sources);
 
 		return exchange -> {
+			//获取当前请求的远程地址信息
 			InetSocketAddress remoteAddress = config.remoteAddressResolver.resolve(exchange);
 			if (remoteAddress != null) {
+				//获取远程地址的hostAddress
 				String hostAddress = remoteAddress.getAddress().getHostAddress();
+				//获取当前请求的host
 				String host = exchange.getRequest().getURI().getHost();
 
 				if (log.isDebugEnabled() && !hostAddress.equals(host)) {
 					log.debug("Remote addresses didn't match " + hostAddress + " != " + host);
 				}
 
+				//校验配置与请求的远程地址是否匹配
 				for (IpSubnetFilterRule source : sources) {
 					if (source.matches(remoteAddress)) {
 						return true;
@@ -107,6 +113,9 @@ public class RemoteAddrRoutePredicateFactory extends AbstractRoutePredicateFacto
 
 	@Validated
 	public static class Config {
+		/**
+		 * 配置远程地址集合
+		 */
 		@NotEmpty
 		private List<String> sources = new ArrayList<>();
 

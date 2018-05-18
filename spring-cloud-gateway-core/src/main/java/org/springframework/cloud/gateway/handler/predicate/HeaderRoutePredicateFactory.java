@@ -27,6 +27,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
+ * 请求header校验谓语创建工厂
  * @author Spencer Gibb
  */
 public class HeaderRoutePredicateFactory extends AbstractRoutePredicateFactory<HeaderRoutePredicateFactory.Config> {
@@ -46,7 +47,9 @@ public class HeaderRoutePredicateFactory extends AbstractRoutePredicateFactory<H
 	@Override
 	public Predicate<ServerWebExchange> apply(Config config) {
 		return exchange -> {
+			//获取请求中给定的名称的header信息
 			List<String> values = exchange.getRequest().getHeaders().get(config.header);
+			//校验header是否匹配
 			if (values != null) {
 				for (String value : values) {
 					if (value.matches(config.regexp)) {
@@ -58,10 +61,19 @@ public class HeaderRoutePredicateFactory extends AbstractRoutePredicateFactory<H
 		};
 	}
 
+	/**
+	 * 请求header校验谓语创建配置
+	 */
 	@Validated
 	public static class Config {
+		/**
+		 * header 名称
+		 */
 		@NotEmpty
 		private String header;
+		/**
+		 * 配置正则
+		 */
 		private String regexp;
 
 		public String getHeader() {

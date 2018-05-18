@@ -27,6 +27,7 @@ import org.springframework.web.server.ServerWebExchange;
 import static org.springframework.cloud.gateway.handler.predicate.BetweenRoutePredicateFactory.getZonedDateTime;
 
 /**
+ * 请求时间（后）校验谓语创建工厂
  * @author Spencer Gibb
  */
 public class AfterRoutePredicateFactory extends AbstractRoutePredicateFactory<AfterRoutePredicateFactory.Config> {
@@ -42,16 +43,30 @@ public class AfterRoutePredicateFactory extends AbstractRoutePredicateFactory<Af
 		return Collections.singletonList(DATETIME_KEY);
 	}
 
+	/**
+	 * 创建时间（后）谓语
+	 * @param config
+	 * @return
+	 */
 	@Override
 	public Predicate<ServerWebExchange> apply(Config config) {
+		//获取配置的时间戳
 		ZonedDateTime datetime = getZonedDateTime(config.getDatetime());
 		return exchange -> {
+			//获取请求当前的时间戳
 			final ZonedDateTime now = ZonedDateTime.now();
+			//校验请求时间是否在配置时间后//返回校验结果
 			return now.isAfter(datetime);
 		};
 	}
 
+	/**
+	 * 时间（后）谓语创建配置
+	 */
 	public static class Config {
+		/**
+		 * 时间
+		 */
 		private String datetime;
 
 		public String getDatetime() {

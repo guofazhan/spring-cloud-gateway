@@ -56,6 +56,10 @@ public class ServerWebExchangeUtils {
 		return ServerWebExchangeUtils.class.getName() + "." + attr;
 	}
 
+	/**
+	 * 设置路由状态
+	 * @param exchange
+	 */
 	public static void setAlreadyRouted(ServerWebExchange exchange) {
 		exchange.getAttributes().put(GATEWAY_ALREADY_ROUTED_ATTR, true);
 	}
@@ -92,6 +96,7 @@ public class ServerWebExchangeUtils {
 	}
 
 	public static void addOriginalRequestUrl(ServerWebExchange exchange, URI url) {
+		//添加原始的请求URI到请求的上下文中
 		exchange.getAttributes().computeIfAbsent(GATEWAY_ORIGINAL_REQUEST_URL_ATTR, s -> new LinkedHashSet<>());
 		LinkedHashSet<URI> uris = exchange.getRequiredAttribute(GATEWAY_ORIGINAL_REQUEST_URL_ATTR);
 		uris.add(url);

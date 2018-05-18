@@ -47,6 +47,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.i
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.setAlreadyRouted;
 
 /**
+ * netty HttpClient客户端请求执行过滤器
  * @author Spencer Gibb
  * @author Biju Kunjummen
  */
@@ -76,49 +77,62 @@ public class NettyRoutingFilter implements GlobalFilter, Ordered {
 		}
 		setAlreadyRouted(exchange);
 
+		//获取当前请求信息
 		ServerHttpRequest request = exchange.getRequest();
 
+		//获取当前请求方法类型
 		final HttpMethod method = HttpMethod.valueOf(request.getMethod().toString());
+		//获取路由的URI信息
 		final String url = requestUrl.toString();
 
+		//获取请求的header信息
 		HttpHeaders filtered = filterRequest(this.headersFilters.getIfAvailable(),
 				exchange);
 
 		final DefaultHttpHeaders httpHeaders = new DefaultHttpHeaders();
 		filtered.forEach(httpHeaders::set);
 
+		//获取header TRANSFER_ENCODING
 		String transferEncoding = request.getHeaders().getFirst(HttpHeaders.TRANSFER_ENCODING);
 		boolean chunkedTransfer = "chunked".equalsIgnoreCase(transferEncoding);
 
 		boolean preserveHost = exchange.getAttributeOrDefault(PRESERVE_HOST_HEADER_ATTRIBUTE, false);
 
+		//通过httpClient发送请求信息
 		return this.httpClient.request(method, url, req -> {
+			//构建HttpClientRequest 请求
 			final HttpClientRequest proxyRequest = req.options(NettyPipeline.SendOptions::flushOnEach)
 					.headers(httpHeaders)
 					.chunkedTransfer(chunkedTransfer)
 					.failOnServerError(false)
 					.failOnClientError(false);
 
+			//设置代理的host信息
 			if (preserveHost) {
 				String host = request.getHeaders().getFirst(HttpHeaders.HOST);
 				proxyRequest.header(HttpHeaders.HOST, host);
 			}
 
+			//发送请求
 			return proxyRequest.sendHeaders() //I shouldn't need this
 					.send(request.getBody().map(dataBuffer ->
 							((NettyDataBuffer)dataBuffer).getNativeBuffer()));
 		}).doOnNext(res -> {
+			//获取请求的原始响应信息
 			ServerHttpResponse response = exchange.getResponse();
+			//构建响应header
 			// put headers and status so filters can modify the response
 			HttpHeaders headers = new HttpHeaders();
-			
+			//从res响应中读取header信息构建新的返回响应header
 			res.responseHeaders().forEach(entry -> headers.add(entry.getKey(), entry.getValue()));
 
 			HttpHeaders filteredResponseHeaders = HttpHeadersFilter.filter(
 					this.headersFilters.getIfAvailable(), headers, exchange, Type.RESPONSE);
-			
+			//添加header到请求原始响应中
 			response.getHeaders().putAll(filteredResponseHeaders);
+			//获取res响应的响应状态
 			HttpStatus status = HttpStatus.resolve(res.status().code());
+			//设置原始响应的状态
 			if (status != null) {
 				response.setStatusCode(status);
 			} else if (response instanceof AbstractServerHttpResponse) {
@@ -128,6 +142,7 @@ public class NettyRoutingFilter implements GlobalFilter, Ordered {
 				throw new IllegalStateException("Unable to set status code on response: " +res.status().code()+", "+response.getClass());
 			}
 
+			//将httpClient客户端响应添加到请求的上下问环境中
 			// Defer committing the response until all route filters have run
 			// Put client response as ServerWebExchange attribute and write response later NettyWriteResponseFilter
 			exchange.getAttributes().put(CLIENT_RESPONSE_ATTR, res);

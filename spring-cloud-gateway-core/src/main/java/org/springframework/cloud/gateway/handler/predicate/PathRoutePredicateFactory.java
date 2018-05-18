@@ -36,6 +36,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.U
 import static org.springframework.http.server.PathContainer.parsePath;
 
 /**
+ * 请求 path校验谓语创建工厂
  * @author Spencer Gibb
  */
 public class PathRoutePredicateFactory extends AbstractRoutePredicateFactory<PathRoutePredicateFactory.Config> {
@@ -59,14 +60,17 @@ public class PathRoutePredicateFactory extends AbstractRoutePredicateFactory<Pat
 	@Override
 	public Predicate<ServerWebExchange> apply(Config config) {
 		synchronized (this.pathPatternParser) {
+			//解析pattern生成pathPattern
 			config.pathPattern = this.pathPatternParser.parse(config.pattern);
 		}
 		return exchange -> {
+			//解析当前请求的uri
 			PathContainer path = parsePath(exchange.getRequest().getURI().getPath());
-
+			//匹配校验
 			boolean match = config.pathPattern.matches(path);
 			traceMatch("Pattern", config.pathPattern.getPatternString(), path, match);
 			if (match) {
+				//匹配成功后添加全局信息URI_TEMPLATE_VARIABLES_ATTRIBUTE
 				PathMatchInfo uriTemplateVariables = config.pathPattern.matchAndExtract(path);
 				exchange.getAttributes().put(URI_TEMPLATE_VARIABLES_ATTRIBUTE, uriTemplateVariables);
 				return true;
@@ -86,7 +90,13 @@ public class PathRoutePredicateFactory extends AbstractRoutePredicateFactory<Pat
 
 	@Validated
 	public static class Config {
+		/**
+		 *
+		 */
 		private String pattern;
+		/**
+		 *
+		 */
 		private PathPattern pathPattern;
 
 		public String getPattern() {

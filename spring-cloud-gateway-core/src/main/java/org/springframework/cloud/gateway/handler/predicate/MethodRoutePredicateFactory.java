@@ -25,6 +25,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
+ * 请求方式（GET,POST,DEL,PUT）校验匹配创建工厂
  * @author Spencer Gibb
  */
 public class MethodRoutePredicateFactory extends AbstractRoutePredicateFactory<MethodRoutePredicateFactory.Config> {
@@ -43,12 +44,17 @@ public class MethodRoutePredicateFactory extends AbstractRoutePredicateFactory<M
 	@Override
 	public Predicate<ServerWebExchange> apply(Config config) {
 		return exchange -> {
+			//获取当前请求的HttpMethod
 			HttpMethod requestMethod = exchange.getRequest().getMethod();
+			//校验请求HttpMethod与配置是否一致
 			return requestMethod == config.getMethod();
 		};
 	}
 
 	public static class Config {
+		/**
+		 * http 请求Method
+		 */
 		private HttpMethod method;
 
 		public HttpMethod getMethod() {

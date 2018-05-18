@@ -31,6 +31,7 @@ import org.springframework.web.server.ServerWebExchange;
 import javax.validation.constraints.NotEmpty;
 
 /**
+ * 请求时间（Between）校验 谓语创建工厂
  * @author Spencer Gibb
  */
 public class BetweenRoutePredicateFactory extends AbstractRoutePredicateFactory<BetweenRoutePredicateFactory.Config> {
@@ -50,22 +51,32 @@ public class BetweenRoutePredicateFactory extends AbstractRoutePredicateFactory<
 	@Override
 	public Predicate<ServerWebExchange> apply(Config config) {
 		//TODO: figure out boot conversion
+		//获取配置的最小时间戳
 		ZonedDateTime datetime1 = getZonedDateTime(config.datetime1);
+		//获取配置的最大时间戳
 		ZonedDateTime datetime2 = getZonedDateTime(config.datetime2);
 		Assert.isTrue(datetime1.isBefore(datetime2),
 				config.datetime1 +
 				" must be before " + config.datetime2);
 
 		return exchange -> {
+			//获取当前时间戳
 			final ZonedDateTime now = ZonedDateTime.now();
+			//校验
 			return now.isAfter(datetime1) && now.isBefore(datetime2);
 		};
 	}
 
 	@Validated
 	public static class Config {
+		/**
+		 * 最小时间戳
+		 */
 		@NotEmpty
 		private String datetime1;
+		/**
+		 * 最大时间戳
+		 */
 		@NotEmpty
 		private String datetime2;
 

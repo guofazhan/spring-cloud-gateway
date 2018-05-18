@@ -23,6 +23,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 /**
+ * 排序的网关路由过滤器，用于包装真实的网关过滤器，已达到过滤器可排序
  * @author Spencer Gibb
  */
 public class OrderedGatewayFilter implements GatewayFilter, Ordered {

@@ -20,17 +20,33 @@ package org.springframework.cloud.gateway.support;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.style.ToStringCreator;
 
+/**
+ * 抽象配置接口实现类
+ * @param <C>
+ */
 public abstract class AbstractConfigurable<C> implements Configurable<C> {
+
+	/**
+	 * 配置Class类型
+	 */
 	private Class<C> configClass;
 
 	protected AbstractConfigurable(Class<C> configClass) {
 		this.configClass = configClass;
 	}
 
+	/**
+	 * 默认获取Class类型
+	 * @return
+	 */
 	public Class<C> getConfigClass() {
 		return configClass;
 	}
 
+	/**
+	 * 默认实现创建配置实例
+	 * @return
+	 */
 	@Override
 	public C newConfig() {
 		return BeanUtils.instantiateClass(this.configClass);

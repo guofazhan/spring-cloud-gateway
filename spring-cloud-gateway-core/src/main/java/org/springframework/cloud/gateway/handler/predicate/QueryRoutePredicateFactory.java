@@ -28,6 +28,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
+ * 请求参数校验谓语创建工厂
  * @author Spencer Gibb
  */
 public class QueryRoutePredicateFactory extends AbstractRoutePredicateFactory<QueryRoutePredicateFactory.Config> {
@@ -49,10 +50,12 @@ public class QueryRoutePredicateFactory extends AbstractRoutePredicateFactory<Qu
 		return exchange -> {
 			if (!StringUtils.hasText(config.regexp)) {
 				// check existence of header
+				//匹配请求是否包含给定的参数
 				return exchange.getRequest().getQueryParams().containsKey(config.param);
 			}
 
 
+			//校验给定的参数值是否匹配
 			List<String> values = exchange.getRequest().getQueryParams().get(config.param);
 			for (String value : values) {
 				if (value.matches(config.regexp)) {
@@ -65,9 +68,15 @@ public class QueryRoutePredicateFactory extends AbstractRoutePredicateFactory<Qu
 
 	@Validated
 	public static class Config {
+		/**
+		 * 参数名称
+		 */
 		@NotEmpty
 		private String param;
 
+		/**
+		 * 参数值匹配表达式
+		 */
 		private String regexp;
 
 		public String getParam() {

@@ -21,6 +21,7 @@ import org.springframework.cloud.gateway.filter.factory.GatewayFilterFactory;
 import org.springframework.cloud.gateway.handler.predicate.RoutePredicateFactory;
 
 /**
+ * name截取工具类
  * @author Spencer Gibb
  */
 public class NameUtils {
@@ -30,10 +31,24 @@ public class NameUtils {
 		return GENERATED_NAME_PREFIX + i;
 	}
 
+	/**
+	 * 根据谓语工厂类名截取谓语工厂的name属性
+	 * xxxxxRoutePredicateFactory:name=xxxxx
+	 * bbbbbRoutePredicateFactory:name=bbbbb
+	 * @param clazz
+	 * @return
+	 */
 	public static String normalizeRoutePredicateName(Class<? extends RoutePredicateFactory> clazz) {
 		return removeGarbage(clazz.getSimpleName().replace(RoutePredicateFactory.class.getSimpleName(), ""));
 	}
 
+	/**
+	 * 根据网关过滤器工厂截取工厂的name属性
+	 * xxxxxGatewayFilterFactory:name=xxxxx
+	 * bbbbbGatewayFilterFactory:name=bbbbb
+	 * @param clazz
+	 * @return
+	 */
 	public static String normalizeFilterFactoryName(Class<? extends GatewayFilterFactory> clazz) {
 		return removeGarbage(clazz.getSimpleName().replace(GatewayFilterFactory.class.getSimpleName(), ""));
 	}

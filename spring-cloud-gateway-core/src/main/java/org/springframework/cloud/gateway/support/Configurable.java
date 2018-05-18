@@ -17,7 +17,23 @@
 
 package org.springframework.cloud.gateway.support;
 
+/**
+ * 配置接口，用于获取创建实例
+ * 此接口用于创建Predicate的配置实例以及创建GatewayFilter的配置
+ *
+ * @param <C>
+ */
 public interface Configurable<C> {
+
+	/**
+	 * 获取配置的Class
+	 * @return
+	 */
 	Class<C> getConfigClass();
+
+	/**
+	 * 创建配置信息
+	 * @return
+	 */
 	C newConfig();
 }

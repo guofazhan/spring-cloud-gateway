@@ -27,9 +27,18 @@ import javax.validation.constraints.NotEmpty;
 public class WeightConfig {
 	public static final String CONFIG_PREFIX = "weight";
 
+	/**
+	 * 组
+	 */
 	@NotEmpty
     private String group;
+	/**
+	 * 组对应的路由ID
+	 */
 	private String routeId;
+	/**
+	 * 权重
+	 */
     @Min(0)
     private int weight;
 
