@@ -21,6 +21,8 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 
 /**
+ * 请求header添加过滤器
+ * 用于在request header 添加属性
  * @author Spencer Gibb
  */
 public class AddRequestHeaderGatewayFilterFactory extends AbstractNameValueGatewayFilterFactory {
@@ -28,10 +30,13 @@ public class AddRequestHeaderGatewayFilterFactory extends AbstractNameValueGatew
 	@Override
 	public GatewayFilter apply(NameValueConfig config) {
 		return (exchange, chain) -> {
+			//1，获取当前ServerHttpRequest并
+			//2,将配置中的header name：value 添加到当前请求中
 			ServerHttpRequest request = exchange.getRequest().mutate()
 					.header(config.getName(), config.getValue())
 					.build();
 
+			//3,将新的变更后的请求信息添加到上下文环境中
 			return chain.filter(exchange.mutate().request(request).build());
 		};
     }

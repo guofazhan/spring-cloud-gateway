@@ -20,6 +20,7 @@ package org.springframework.cloud.gateway.filter.factory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
+ * 安全相关的请求header配置信息
  * @author Spencer Gibb
  */
 @ConfigurationProperties("spring.cloud.gateway.filter.secure-headers")

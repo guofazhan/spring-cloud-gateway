@@ -48,6 +48,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.s
 
 /**
  * netty HttpClient客户端请求执行过滤器
+ * 与NettyWriteResponseFilter配合完成对路由服务的调用
  * @author Spencer Gibb
  * @author Biju Kunjummen
  */

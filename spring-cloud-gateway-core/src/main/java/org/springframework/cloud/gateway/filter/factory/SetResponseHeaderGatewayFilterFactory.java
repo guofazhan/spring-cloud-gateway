@@ -22,6 +22,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import reactor.core.publisher.Mono;
 
 /**
+ * 设置响应的header过滤器创建工厂
  * @author Spencer Gibb
  */
 public class SetResponseHeaderGatewayFilterFactory extends AbstractNameValueGatewayFilterFactory {
@@ -29,6 +30,7 @@ public class SetResponseHeaderGatewayFilterFactory extends AbstractNameValueGate
 	@Override
 	public GatewayFilter apply(NameValueConfig config) {
 		return (exchange, chain) -> chain.filter(exchange).then(Mono.fromRunnable(() -> {
+			//通过配置设置响应的header信息
 			exchange.getResponse().getHeaders().set(config.name, config.value);
 		}));
 	}

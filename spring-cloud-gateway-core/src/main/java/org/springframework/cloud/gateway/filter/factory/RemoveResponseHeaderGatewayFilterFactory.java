@@ -25,6 +25,8 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import reactor.core.publisher.Mono;
 
 /**
+ * 移除Response header信息过滤器创建工厂
+ * 用户移除Response header中给定的名称的字段
  * @author Spencer Gibb
  */
 public class RemoveResponseHeaderGatewayFilterFactory extends AbstractGatewayFilterFactory<AbstractGatewayFilterFactory.NameConfig> {
@@ -41,6 +43,7 @@ public class RemoveResponseHeaderGatewayFilterFactory extends AbstractGatewayFil
 	@Override
 	public GatewayFilter apply(NameConfig config) {
 		return (exchange, chain) -> chain.filter(exchange).then(Mono.fromRunnable(() -> {
+			//获取响应，并将响应的header 中配置中的名称移除
 			exchange.getResponse().getHeaders().remove(config.getName());
 		}));
 	}

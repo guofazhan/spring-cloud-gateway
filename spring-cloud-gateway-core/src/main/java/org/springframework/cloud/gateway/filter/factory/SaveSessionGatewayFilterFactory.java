@@ -19,6 +19,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.web.server.WebSession;
 
 /**
+ * 会话保存过滤器创建工厂
  * Save the current {@link WebSession} before executing the rest of the {@link org.springframework.cloud.gateway.filter.GatewayFilterChain}.
  *
  * Filter is very useful for situation where the WebSession is lazy (e.g. Spring Session MongoDB) and making a remote call requires

@@ -35,6 +35,8 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.s
 import reactor.core.publisher.Mono;
 
 /**
+ * 请求转发过滤器创建工厂
+ * 用于转发请求到配置给定的URL上
  * @author Spencer Gibb
  */
 public class RedirectToGatewayFilterFactory extends AbstractGatewayFilterFactory<RedirectToGatewayFilterFactory.Config> {
@@ -53,6 +55,7 @@ public class RedirectToGatewayFilterFactory extends AbstractGatewayFilterFactory
 
 	@Override
 	public GatewayFilter apply(Config config) {
+		//获取配置状态，以及URL
 		return apply(config.status, config.url);
 	}
 

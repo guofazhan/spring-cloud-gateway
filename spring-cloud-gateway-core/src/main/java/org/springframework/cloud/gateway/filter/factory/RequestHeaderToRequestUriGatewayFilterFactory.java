@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
+ * 通过请求中header值改变请求URL过滤器创建工厂
  * This filter changes the request uri by a request header
  *
  * @author Toshiaki Maki
@@ -34,9 +35,11 @@ public class RequestHeaderToRequestUriGatewayFilterFactory extends
 	@Override
 	protected Optional<URI> determineRequestUri(ServerWebExchange exchange,
 			NameConfig config) {
+		//获取当前请求中给定name的header值 为 requestUrl
 		String requestUrl = exchange.getRequest().getHeaders().getFirst(config.getName());
 		return Optional.ofNullable(requestUrl).map(url -> {
 			try {
+				//转换requestUrl为URL对象
 				return new URL(url).toURI();
 			}
 			catch (MalformedURLException | URISyntaxException e) {

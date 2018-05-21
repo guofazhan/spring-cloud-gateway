@@ -20,6 +20,9 @@ package org.springframework.cloud.gateway.filter.factory;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 
 /**
+ *
+ * 响应header添加数据过滤器
+ * 用户在response header中添加配置数据
  * @author Spencer Gibb
  */
 public class AddResponseHeaderGatewayFilterFactory extends AbstractNameValueGatewayFilterFactory {
@@ -27,6 +30,7 @@ public class AddResponseHeaderGatewayFilterFactory extends AbstractNameValueGate
 	@Override
 	public GatewayFilter apply(NameValueConfig config) {
 		return (exchange, chain) -> {
+			//获取Response并将配置的数据添加到header中
 			exchange.getResponse().getHeaders().add(config.getName(), config.getValue());
 
 			return chain.filter(exchange);

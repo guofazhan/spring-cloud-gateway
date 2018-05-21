@@ -24,6 +24,8 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 
 /**
+ * 移除请求header信息过滤器创建工厂
+ * 用户移除request header中给定的名称的字段
  * @author Spencer Gibb
  */
 public class RemoveRequestHeaderGatewayFilterFactory extends AbstractGatewayFilterFactory<AbstractGatewayFilterFactory.NameConfig> {
@@ -40,6 +42,7 @@ public class RemoveRequestHeaderGatewayFilterFactory extends AbstractGatewayFilt
 	@Override
 	public GatewayFilter apply(NameConfig config) {
 		return (exchange, chain) -> {
+			//获取请求信息，并将配置中给定名称的header移除掉
 			ServerHttpRequest request = exchange.getRequest().mutate()
 					.headers(httpHeaders -> httpHeaders.remove(config.getName()))
 					.build();

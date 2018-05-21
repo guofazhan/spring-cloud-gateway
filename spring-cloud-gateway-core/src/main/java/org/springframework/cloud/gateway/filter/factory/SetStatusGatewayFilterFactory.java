@@ -30,6 +30,7 @@ import org.springframework.http.server.reactive.AbstractServerHttpResponse;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.setResponseStatus;
 
 /**
+ * 设置响应状态过滤器创建工厂
  * @author Spencer Gibb
  */
 public class SetStatusGatewayFilterFactory extends AbstractGatewayFilterFactory<SetStatusGatewayFilterFactory.Config> {
@@ -47,6 +48,7 @@ public class SetStatusGatewayFilterFactory extends AbstractGatewayFilterFactory<
 
 	@Override
 	public GatewayFilter apply(Config config) {
+		//获取配置的响应状态
 		final HttpStatus status = ServerWebExchangeUtils.parse(config.status);
 		final Integer intStatus;
 		if (status == null) {
@@ -67,6 +69,8 @@ public class SetStatusGatewayFilterFactory extends AbstractGatewayFilterFactory<
 			return chain.filter(exchange).then(Mono.fromRunnable(() -> {
 				// check not really needed, since it is guarded in setStatusCode,
 				// but it's a good example
+				//将响应的原始状态设置成配置中的状态
+				//调用PrintWriter 对象的 close()方法之前getResponse().isCommitted返回false
 				if (!exchange.getResponse().isCommitted()) {
 					if (status != null) { // standard status
 						setResponseStatus(exchange, status);

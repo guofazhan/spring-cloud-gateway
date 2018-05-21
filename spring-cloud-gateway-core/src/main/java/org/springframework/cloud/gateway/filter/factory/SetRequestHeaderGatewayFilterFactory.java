@@ -21,6 +21,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 
 /**
+ * 请求header设置过滤器创建工厂
  * @author Spencer Gibb
  */
 public class SetRequestHeaderGatewayFilterFactory extends AbstractNameValueGatewayFilterFactory {
@@ -28,6 +29,7 @@ public class SetRequestHeaderGatewayFilterFactory extends AbstractNameValueGatew
 	@Override
 	public GatewayFilter apply(NameValueConfig config) {
 		return (exchange, chain) -> {
+			//通过配置信息设置请求的header信息
 			ServerHttpRequest request = exchange.getRequest().mutate()
 					.headers(httpHeaders -> httpHeaders.set(config.name, config.value))
 					.build();

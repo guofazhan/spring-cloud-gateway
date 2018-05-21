@@ -40,6 +40,9 @@ import org.springframework.http.HttpStatus.Series;
 import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
 
+/**
+ * 失败重试过滤器创建工厂
+ */
 public class RetryGatewayFilterFactory extends AbstractGatewayFilterFactory<RetryGatewayFilterFactory.RetryConfig> {
 	private static final Log log = LogFactory.getLog(RetryGatewayFilterFactory.class);
 

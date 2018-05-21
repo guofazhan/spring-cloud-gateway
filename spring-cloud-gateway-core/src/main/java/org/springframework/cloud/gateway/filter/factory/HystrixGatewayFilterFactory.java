@@ -50,6 +50,7 @@ import rx.RxReactiveStreams;
 import rx.Subscription;
 
 /**
+ * 熔断功能过滤器创建工厂
  * Depends on `spring-cloud-starter-netflix-hystrix`, {@see http://cloud.spring.io/spring-cloud-netflix/}
  * @author Spencer Gibb
  */

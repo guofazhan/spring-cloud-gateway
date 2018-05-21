@@ -30,6 +30,8 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.addOriginalRequestUrl;
 
 /**
+ * 路径前缀过滤器创建工厂
+ * 用于在请求的path上添加前缀信息
  * @author Spencer Gibb
  */
 public class PrefixPathGatewayFilterFactory extends AbstractGatewayFilterFactory<PrefixPathGatewayFilterFactory.Config> {
@@ -55,22 +57,29 @@ public class PrefixPathGatewayFilterFactory extends AbstractGatewayFilterFactory
 			if (alreadyPrefixed) {
 				return chain.filter(exchange);
 			}
+			//设置前缀添加状态属性
 			exchange.getAttributes().put(GATEWAY_ALREADY_PREFIXED_ATTR, true);
 
+			//获取当前请求ServerHttpRequest
 			ServerHttpRequest req = exchange.getRequest();
+			//保存原始URI到上下文环境中
 			addOriginalRequestUrl(exchange, req.getURI());
+			//组装添加前缀后的路径信息
 			String newPath = config.prefix + req.getURI().getRawPath();
 
+			//构建添加前缀路径的新ServerHttpRequest
 			ServerHttpRequest request = req.mutate()
 					.path(newPath)
 					.build();
 
+			//设置新请求URI到上下文环境
 			exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
 
 			if (log.isTraceEnabled()) {
 				log.trace("Prefixed URI with: "+config.prefix+" -> "+request.getURI());
 			}
 
+			//将新请求信息添加到调度器中
 			return chain.filter(exchange.mutate().request(request).build());
 		};
 	}

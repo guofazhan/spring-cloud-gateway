@@ -25,6 +25,7 @@ import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.http.HttpStatus;
 
 /**
+ * 请求限流过滤器创建工厂
  * User Request Rate Limiter filter. See https://stripe.com/blog/rate-limiters and
  */
 public class RequestRateLimiterGatewayFilterFactory extends AbstractGatewayFilterFactory<RequestRateLimiterGatewayFilterFactory.Config> {
@@ -53,11 +54,14 @@ public class RequestRateLimiterGatewayFilterFactory extends AbstractGatewayFilte
 	@Override
 	public GatewayFilter apply(Config config) {
 		KeyResolver resolver = (config.keyResolver == null) ? defaultKeyResolver : config.keyResolver;
+		//获取限流器
 		RateLimiter<Object> limiter = (config.rateLimiter == null) ? defaultRateLimiter : config.rateLimiter;
 
 		return (exchange, chain) -> {
+			//获取路由信息
 			Route route = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
 
+			//对路由限流
 			return resolver.resolve(exchange).flatMap(key ->
 					// TODO: if key is empty?
 					limiter.isAllowed(route.getId(), key).flatMap(response -> {

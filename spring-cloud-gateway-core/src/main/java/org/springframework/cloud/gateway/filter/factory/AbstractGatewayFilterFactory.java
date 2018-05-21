@@ -19,6 +19,7 @@ package org.springframework.cloud.gateway.filter.factory;
 
 import org.springframework.cloud.gateway.support.AbstractConfigurable;
 
+
 public abstract class AbstractGatewayFilterFactory<C>
 		extends AbstractConfigurable<C> implements GatewayFilterFactory<C> {
 

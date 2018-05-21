@@ -20,6 +20,8 @@ package org.springframework.cloud.gateway.event;
 import org.springframework.context.ApplicationEvent;
 
 /**
+ * 路由信息刷新事件
+ * 在CachingRouteLocator定位器中用于通知本地缓存重新加载
  * @author Spencer Gibb
  */
 public class RefreshRoutesEvent extends ApplicationEvent {

@@ -29,6 +29,7 @@ import org.springframework.web.server.ServerWebExchange;
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 
 /**
+ * 抽象的改变请求URL过滤器
  * This filter changes the request uri by
  * {@link #determineRequestUri(ServerWebExchange, T)} logic.
  *
@@ -52,9 +53,13 @@ public abstract class AbstractChangeRequestUriGatewayFilterFactory<T>
 
 	public GatewayFilter apply(T config) {
 		return new OrderedGatewayFilter((exchange, chain) -> {
+			//获取变更的URL
 			Optional<URI> uri = this.determineRequestUri(exchange, config);
+			//当URL Optional包含值时
 			uri.ifPresent(u -> {
+				//获取调度中心的属性map
 				Map<String, Object> attributes = exchange.getAttributes();
+				//将变更的URL设置到上下文环境中
 				attributes.put(GATEWAY_REQUEST_URL_ATTR, u);
 			});
 			return chain.filter(exchange);

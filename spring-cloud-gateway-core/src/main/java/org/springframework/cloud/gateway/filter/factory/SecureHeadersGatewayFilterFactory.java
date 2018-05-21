@@ -21,6 +21,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.http.HttpHeaders;
 
 /**
+ * 添加安全相关请求header信息过滤器创建工厂
  * https://blog.appcanary.com/2017/http-security-headers.html
  * @author Spencer Gibb
  */

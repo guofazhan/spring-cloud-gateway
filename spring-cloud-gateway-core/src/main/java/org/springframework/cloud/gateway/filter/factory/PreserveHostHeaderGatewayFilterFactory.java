@@ -32,6 +32,7 @@ public class PreserveHostHeaderGatewayFilterFactory extends AbstractGatewayFilte
 
     public GatewayFilter apply(Object config) {
 		return (exchange, chain) -> {
+			//设置上下文环境PRESERVE_HOST_HEADER_ATTRIBUTE属性
 			exchange.getAttributes().put(PRESERVE_HOST_HEADER_ATTRIBUTE, true);
 			return chain.filter(exchange);
 		};

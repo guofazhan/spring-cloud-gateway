@@ -33,6 +33,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.U
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.addOriginalRequestUrl;
 
 /**
+ * 设置path过滤器创建工厂
  * @author Spencer Gibb
  */
 public class SetPathGatewayFilterFactory extends AbstractGatewayFilterFactory<SetPathGatewayFilterFactory.Config> {
@@ -50,11 +51,13 @@ public class SetPathGatewayFilterFactory extends AbstractGatewayFilterFactory<Se
 
 	@Override
 	public GatewayFilter apply(Config config) {
+		//获取配置中的URI UriTemplate
 		UriTemplate uriTemplate = new UriTemplate(config.template);
 
 		return (exchange, chain) -> {
 			PathMatchInfo variables = exchange.getAttribute(URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 			ServerHttpRequest req = exchange.getRequest();
+			//添加原始请求到上下问环境中
 			addOriginalRequestUrl(exchange, req.getURI());
 			Map<String, String> uriVariables;
 
@@ -64,11 +67,13 @@ public class SetPathGatewayFilterFactory extends AbstractGatewayFilterFactory<Se
 				uriVariables = Collections.emptyMap();
 			}
 
+			//构建新的URI
 			URI uri = uriTemplate.expand(uriVariables);
 			String newPath = uri.getRawPath();
 
 			exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, uri);
 
+			//构建新请求信息
 			ServerHttpRequest request = req.mutate()
 					.path(newPath)
 					.build();
