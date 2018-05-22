@@ -59,6 +59,11 @@ public class FilteringWebHandler implements WebHandler {
 		this.globalFilters = loadFilters(globalFilters);
 	}
 
+	/**
+	 * 包装加载全局的过滤器，将全局过滤器包装成GatewayFilter
+	 * @param filters
+	 * @return
+	 */
 	private static List<GatewayFilter> loadFilters(List<GlobalFilter> filters) {
 		return filters.stream()
 				.map(filter -> {
