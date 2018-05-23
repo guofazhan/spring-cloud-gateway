@@ -38,6 +38,7 @@ public interface GatewayFilter extends ShortcutConfigurable {
 	String VALUE_KEY = "value";
 
 	/**
+	 *  过滤器执行方法
 	 * Process the Web request and (optionally) delegate to the next
 	 * {@code WebFilter} through the given {@link GatewayFilterChain}.
 	 * @param exchange the current server exchange

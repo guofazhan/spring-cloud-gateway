@@ -109,7 +109,13 @@ public class FilteringWebHandler implements WebHandler {
 	 */
 	private static class DefaultGatewayFilterChain implements GatewayFilterChain {
 
+		/**
+		 * 当前过滤执行过滤器在集合中索引
+		 */
 		private final int index;
+		/**
+		 * 过滤器集合
+		 */
 		private final List<GatewayFilter> filters;
 
 		public DefaultGatewayFilterChain(List<GatewayFilter> filters) {
@@ -117,6 +123,11 @@ public class FilteringWebHandler implements WebHandler {
 			this.index = 0;
 		}
 
+		/**
+		 * 构建
+		 * @param parent 上一个执行过滤器对应的FilterChain
+		 * @param index  当前要执行过滤器的索引
+		 */
 		private DefaultGatewayFilterChain(DefaultGatewayFilterChain parent, int index) {
 			this.filters = parent.getFilters();
 			this.index = index;
@@ -126,14 +137,22 @@ public class FilteringWebHandler implements WebHandler {
 			return filters;
 		}
 
+		/**
+		 * @param exchange the current server exchange
+		 * @return
+		 */
 		@Override
 		public Mono<Void> filter(ServerWebExchange exchange) {
 			return Mono.defer(() -> {
 				if (this.index < filters.size()) {
+					//获取当前索引的过滤器
 					GatewayFilter filter = filters.get(this.index);
+					//构建当前索引的下一个过滤器的FilterChain
 					DefaultGatewayFilterChain chain = new DefaultGatewayFilterChain(this, this.index + 1);
+					//调用过滤器的filter方法执行过滤器
 					return filter.filter(exchange, chain);
 				} else {
+					//当前索引大于等于过滤集合大小，标识所有链表都已执行完毕，返回空
 					return Mono.empty(); // complete
 				}
 			});
@@ -145,6 +164,9 @@ public class FilteringWebHandler implements WebHandler {
 	 */
 	private static class GatewayFilterAdapter implements GatewayFilter {
 
+		/**
+		 * 全局过滤器
+		 */
 		private final GlobalFilter delegate;
 
 		public GatewayFilterAdapter(GlobalFilter delegate) {
